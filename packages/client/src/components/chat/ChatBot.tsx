@@ -31,10 +31,15 @@ const ChatBot = () => {
          setError('');
          popAudio.play();
 
-         const { data } = await axios.post<chatResponse>('/api/chat', {
-            prompt,
-            conversationId: conversationId.current,
-         });
+         const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
+         const { data } = await axios.post<chatResponse>(
+            `${API_BASE_URL}/api/chat`,
+            {
+               prompt,
+               conversationId: conversationId.current,
+            }
+         );
          setMessages((prev) => [
             ...prev,
             { content: data.message, role: 'assistant' },
