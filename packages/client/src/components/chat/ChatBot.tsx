@@ -1,3 +1,4 @@
+import React from 'react';
 import axios from 'axios';
 import { useRef, useState } from 'react';
 import TypingIndicator from './TypingIndicator';
@@ -13,14 +14,16 @@ popAudio.volume = 0.5;
 const notificationAudio = new Audio(notificationSound);
 notificationAudio.volume = 0.5;
 
-type chatResponse = {
+type ChatResponse = {
    message: string;
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 const ChatBot = () => {
-   const [messages, setMessages] = useState<Message[]>([]); // For storing conversation history
-   const [isBotLoading, setIsBotLoading] = useState(false); // For loading state (optional)
-   const [error, setError] = useState(''); // For error handling (optional)
+   const [messages, setMessages] = useState<Message[]>([]);
+   const [isBotLoading, setIsBotLoading] = useState(false);
+   const [error, setError] = useState('');
 
    const conversationId = useRef(crypto.randomUUID());
 
@@ -31,19 +34,19 @@ const ChatBot = () => {
          setError('');
          popAudio.play();
 
-         const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-
-         const { data } = await axios.post<chatResponse>(
+         const { data } = await axios.post<ChatResponse>(
             `${API_BASE_URL}/api/chat`,
             {
                prompt,
                conversationId: conversationId.current,
             }
          );
+
          setMessages((prev) => [
             ...prev,
             { content: data.message, role: 'assistant' },
          ]);
+
          notificationAudio.play();
       } catch (error) {
          console.error(error);
